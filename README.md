@@ -52,28 +52,26 @@ Tell the `bodeguero` from which table you are trying to get the data:
 
 you can also tell him to join more tables to perform your query:
 
-	var joinedTables = {
-		'->': '<another table> on .<field> = .<field>',
-		'<-': '<another table> on .<field> = .<field>',
-		'><': '<another table> on .<field> = .<field>',
-		'<>': '<another table> on .<field> = .<field>',
+	var joinTables = {
+		'<another table>': '>> on .<field> = .<field>',
+		'<another table>': '<< on .<field> = .<field>'
 	};
 	bodeguero.in('<table>', joinedTables)
 
-The keys from the `joinedTables` are the logic that tells the `bodeguero` how to join the tables for the query:
+The keys from the `joinTables` object are the actual tables to be joined. The operators before the `on` keyword tell the `bodeguero` how to join the tables for the query:
 
-* '->' : Right join
-* '<-' : Left join
-* '><' : Inner join
-* '<>' : (Full) outter join
+* `>>` - Right join,
+* `<<` - left join,
+* `><` - inner join,
+* `<>` - outter join
 
-Notice the `on` condition; this tells `bodeguero` which fields to match when joining tables. The first field always corresponds to the table being joined. Here's an illustration:
+The `on` keyword tells `bodeguero` which fields to match when joining the tables. The first field always corresponds to the table being joined. Here's an illustration:
 
 	var join = {
-		'<-': 'Brand on .id = .brand_id'
+		'Brand': '<< on .id = .brand_id'
 	};
-	bodeguero.in('Wine', join)
-	
+	bodeguero.in('Wine', join)...
+
 will translate into:
 
 	SELECT
@@ -81,7 +79,6 @@ will translate into:
 	FROM "Wine"
 	LEFT JOIN "Brand" ON "Brand"."id" = "Wine"."brand_id"
 		...
-
 
 
 ##### The field(s) to get
@@ -108,7 +105,9 @@ You do not need to worry about SQL injection or escaping. The `bodeguero` will t
 
 
 
-### And here's a practical example
+### And here are some practical examples
+
+##### Get some data from a single table
 
 	var bottle = bodeguero.in('Wine').find('brand, color').where('year = 1980');
 
@@ -133,11 +132,73 @@ found more than one?
 	]
 
 
+##### Get some data from joined tables
+
+	var join = {
+			'Brand': '<< on .id = .brand_id'
+		},
+		bottle = bodeguero.in('Wine').find('Brand.name, name, color').where('year = 1980');
+
+Found only one bottle? - The the response will be like this:
+
+	{
+	 brandName: "Morjón & Castilla",
+	 name: "Tempranillo de la Torre",
+	 color: "red"
+	}
+
+found more than one?
+
+	[
+	 {
+	  brandName: "Morjón & Castilla",
+	  name: "Tempranillo de la Torre",
+	  color: "red"
+	 },
+     {
+      brandName: "Siete vientos",
+	  name: "Monjas de Calavera",
+	  color: "white"
+	 }
+	]
+
+Notice that in this case you told the `bodeguero` to get the `Brand.name` field, so he went to look for the `name` column in the `Brand` table. Furthermore, to avoid any possible collision, he named the response property accordingly; `brandName`
+
+As in standard `SQL`, you can also tell the `bodeguero` to use an alias for any column in the query:
+
+	var join = {
+			'Brand': '<< on .id = .brand_id'
+		},
+		bottle = bodeguero.in('Wine').find('Brand.name as brand, name, color').where('year = 1980');
+
+will return:
+
+	{
+	 brand: "Morjón & Castilla",
+	 name: "Tempranillo de la Torre",
+	 color: "red"
+	}
 
 
+##### Joining more tables?
 
+Try this:
 
+	var join = {
+			'Brand': '<< on .id = .brand_id',
+			'Country': '<< on .id = Brand.country_id'
+		},
+		fields = 'Country.name as country, Brand.name as brand, name, color',
+		bottle = bodeguero.in('Wine').find(fields).where('year = 1980');
 
+will return:
+
+	{
+	 country: "Spain",
+	 brand: "Morjón & Castilla",
+	 name: "Tempranillo de la Torre",
+	 color: "red"
+	}
 
 
 
