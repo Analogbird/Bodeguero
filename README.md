@@ -87,7 +87,7 @@ Now that you have defined the table(s) on which to perform the query, specify so
 
 	bodeguero.in(<table>).find('<one field>, <another field>')
 	
-of course, you also tell the `bodeguero` to simply get you everything:
+of course, you can also tell the `bodeguero` to simply get you everything:
 
 	bodeguero.in(<table>).find('*')
 
@@ -111,7 +111,7 @@ You do not need to worry about SQL injection or escaping. The `bodeguero` will t
 
 	var bottle = bodeguero.in('Wine').find('brand, color').where('year = 1980');
 
-Found only one bottle? - The the response will be like this:
+Found only one bottle? - Then the response will be like this:
 
 	{
 	 brand: "Tempranillo de la Torre",
@@ -140,7 +140,7 @@ found more than one?
 		fields = 'Brand.name, name, color',
 		bottle = bodeguero.in('Wine', join).find(fields).where('year = 1980');
 
-Found only one bottle? - The the response will be like this:
+Found only one bottle? - Then the response will be like this:
 
 	{
 	 brandName: "Morjón & Castilla",
@@ -163,7 +163,7 @@ found more than one?
 	 }
 	]
 
-Notice that in this case you told the `bodeguero` to get the `Brand.name` field, so he went to look for the `name` column in the `Brand` table. Furthermore, to avoid any possible collision, he named the response property accordingly; `brandName`
+Note that in this case you told the `bodeguero` to get the `Brand.name` field, so he went to look for the `name` column in the `Brand` table. Furthermore, to avoid any potential collisions, he named the response property accordingly; `brandName`
 
 As in standard `SQL`, you can also tell the `bodeguero` to use an alias for any column in the query:
 
