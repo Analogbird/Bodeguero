@@ -53,9 +53,10 @@ Tell the `bodeguero` from which table you are trying to get the data:
 you can also tell him to join more tables to perform your query:
 
 	var joinedTables = {
-		'->': '<another table>',
-		'<-': '<another table>',
-		'><': '<another table>',
+		'->': '<another table> on .<field> = .<field>',
+		'<-': '<another table> on .<field> = .<field>',
+		'><': '<another table> on .<field> = .<field>',
+		'<>': '<another table> on .<field> = .<field>',
 	};
 	bodeguero.in('<table>', joinedTables)
 
@@ -64,6 +65,23 @@ The keys from the `joinedTables` are the logic that tells the `bodeguero` how to
 * '->' : Right join
 * '<-' : Left join
 * '><' : Inner join
+* '<>' : (Full) outter join
+
+Notice the `on` condition; this tells `bodeguero` which fields to match when joining tables. The first field always corresponds to the table being joined. Here's an illustration:
+
+	var join = {
+		'<-': 'Brand on .id = .brand_id'
+	};
+	bodeguero.in('Wine', join)
+	
+will translate into:
+
+	SELECT
+		...
+	FROM "Wine"
+	LEFT JOIN "Brand" ON "Brand"."id" = "Wine"."brand_id"
+		...
+
 
 
 ##### The field(s) to get
