@@ -137,7 +137,8 @@ found more than one?
 	var join = {
 			'Brand': '<< on .id = .brand_id'
 		},
-		bottle = bodeguero.in('Wine').find('Brand.name, name, color').where('year = 1980');
+		fields = 'Brand.name, name, color',
+		bottle = bodeguero.in('Wine', join).find(fields).where('year = 1980');
 
 Found only one bottle? - The the response will be like this:
 
@@ -169,7 +170,8 @@ As in standard `SQL`, you can also tell the `bodeguero` to use an alias for any 
 	var join = {
 			'Brand': '<< on .id = .brand_id'
 		},
-		bottle = bodeguero.in('Wine').find('Brand.name as brand, name, color').where('year = 1980');
+		fields = 'Brand.name as brand, name, color',
+		bottle = bodeguero.in('Wine', join).find(fields).where('year = 1980');
 
 will return:
 
@@ -189,7 +191,7 @@ Try this:
 			'Country': '<< on .id = Brand.country_id'
 		},
 		fields = 'Country.name as country, Brand.name as brand, name, color',
-		bottle = bodeguero.in('Wine').find(fields).where('year = 1980');
+		bottle = bodeguero.in('Wine', join).find(fields).where('year = 1980');
 
 will return:
 
